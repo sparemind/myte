@@ -15,5 +15,4 @@ uci             Run the bot in UCI mode
 uci-baseline    Run the baseline bot in UCI mode
 
 baseline        Copy the source code of the current bot to the baseline bot
-kill-uci        Kill all Uci.dll processes (can be left behind by cutechess-cli)
 ```
