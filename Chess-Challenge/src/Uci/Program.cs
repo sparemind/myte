@@ -26,7 +26,7 @@ internal static class Program
 
         IChessBot InitBot()
         {
-            if (useBaselineBot) return new EvilBot();
+            if (useBaselineBot || Environment.GetEnvironmentVariable("BASELINE") != null) return new EvilBot();
             return new MyBot();
         }
 
