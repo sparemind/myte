@@ -1,5 +1,6 @@
 using System;
 using ChessChallenge.API;
+using ChessChallenge.Example;
 
 namespace ChessChallenge.Uci;
 
@@ -19,7 +20,13 @@ internal static class Program
 
     public static void Main()
     {
-        IChessBot bot = new MyBot();
+        IChessBot InitBot()
+        {
+            if (Environment.GetEnvironmentVariable("BASELINE") != null) return new EvilBot();
+            return new MyBot();
+        }
+
+        var bot = InitBot();
         var board = Board.CreateBoardFromFEN(StartingFen);
 
         while (true)
@@ -41,7 +48,7 @@ internal static class Program
                     Console.WriteLine("readyok");
                     break;
                 case "ucinewgame":
-                    bot = new MyBot();
+                    bot = InitBot();
                     Console.WriteLine("readyok");
                     break;
                 case "position":

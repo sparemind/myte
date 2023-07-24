@@ -17,9 +17,12 @@ build: build-gui build-uci
 .PHONY: run
 run:
 	cd $(project) && dotnet run --project $(gui_proj) -c $(mode)
-.PHONY: run-uci
-run-uci:
+.PHONY: uci
+uci:
 	cd $(project) && dotnet run --project $(uci_proj) -c $(mode)
+.PHONY: uci-baseline
+uci-baseline:
+	cd $(project) && BASELINE=true dotnet run --project $(uci_proj) -c $(mode)
 
 
 .PHONY: baseline
