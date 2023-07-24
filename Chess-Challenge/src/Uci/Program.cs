@@ -14,31 +14,35 @@ namespace ChessChallenge.Uci;
 // - position (startpos | fen FEN) [moves MOVE1 MOVE2 ...]      Sets the engine to the given position
 // - go [wtime TIME | btime TIME]                               Searches for the best move
 // - quit                                                       Exits the program  
+// - baseline                                                   (custom) Runs the baseline bot version
 internal static class Program
 {
     private const string StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public static void Main()
     {
+        var board = Board.CreateBoardFromFEN(StartingFen);
+        var useBaselineBot = false;
+
         IChessBot InitBot()
         {
-            if (Environment.GetEnvironmentVariable("BASELINE") != null) return new EvilBot();
+            if (useBaselineBot) return new EvilBot();
             return new MyBot();
         }
 
         var bot = InitBot();
-        var board = Board.CreateBoardFromFEN(StartingFen);
-
         while (true)
         {
             var input = Console.ReadLine();
             if (string.IsNullOrEmpty(input)) continue;
 
-
             var tokens = input.Split(' ');
             var command = tokens[0];
             switch (command)
             {
+                case "baseline":
+                    useBaselineBot = true;
+                    break;
                 case "uci":
                     Console.WriteLine("id name Myte 0.1.0");
                     Console.WriteLine("sparemind");
