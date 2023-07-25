@@ -4,14 +4,15 @@ uci_proj = Uci.csproj
 mode = Release
 
 
+.PHONY: build
+build: build-gui build-uci
+
 .PHONY: build-gui
 build-gui:
 	dotnet build "$(project)/$(gui_proj)" -c $(mode)
 .PHONY: build-uci
 build-uci:
 	dotnet build "$(project)/$(uci_proj)" -c $(mode)
-.PHONY: build
-build: build-gui build-uci
 
 
 .PHONY: run
@@ -37,3 +38,8 @@ compare: build-uci
 		-sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 \
 		-recover -rounds 1024 -games 2 -repeat -concurrency 16 \
 		-pgnout "compare-$$(date +%s).pgn" fi -ratinginterval 1
+
+
+.PHONY: clean
+clean:
+	rm -r "$(project)/bin" "$(project)/obj"
