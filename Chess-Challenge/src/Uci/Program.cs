@@ -24,9 +24,14 @@ internal static class Program
         var board = Board.CreateBoardFromFEN(StartingFen);
         var useBaselineBot = false;
 
+        bool IsBaselineBot()
+        {
+            return useBaselineBot || Environment.GetEnvironmentVariable("BASELINE") != null;
+        }
+
         IChessBot InitBot()
         {
-            if (useBaselineBot || Environment.GetEnvironmentVariable("BASELINE") != null) return new EvilBot();
+            if (IsBaselineBot()) return new EvilBot();
             return new MyBot();
         }
 
@@ -44,7 +49,8 @@ internal static class Program
                     useBaselineBot = true;
                     break;
                 case "uci":
-                    Console.WriteLine("id name Myte 0.1.0");
+                    var tag = IsBaselineBot() ? "-baseline" : "";
+                    Console.WriteLine($"id name Myte 0.1.0{tag}");
                     Console.WriteLine("sparemind");
                     Console.WriteLine("uciok");
                     break;
