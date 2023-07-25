@@ -37,6 +37,7 @@ compare: build-uci
 		-each proto=uci tc=inf/10+0.0 \
 		-sprt elo0=0 elo1=10 alpha=0.05 beta=0.05 \
 		-recover -rounds 1024 -games 2 -repeat -concurrency 16 \
+		-openings file=$(project)/resources/Fens.txt format=epd order=random plies=2 \
 		-pgnout "compare-$$(date +%s).pgn" fi -ratinginterval 1
 
 
