@@ -44,3 +44,6 @@ compare: build-uci
 .PHONY: clean
 clean:
 	rm -r "$(project)/bin" "$(project)/obj"
+.PHONY: kill-uci
+kill-uci:
+	kill $(ps aux | grep '[U]ci.dll' | awk '{print $2}')
