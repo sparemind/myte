@@ -4,8 +4,8 @@
 
 ```
 Set up a negamax alpha-beta quiescence search that calculates a basic 
-100/300/300/500/900 piece material score on the fly. Use 1/20th of the remaining
-clock time per turn.
+100/300/300/500/900 piece material score on the fly. Use 1/20th of the
+remaining clock time per turn.
 
 Time Control:   inf/10+0.0
 Brain Capacity: 396/1024 (38.67% full) 
