@@ -28,7 +28,10 @@ uci-baseline:
 
 .PHONY: baseline
 baseline:
-	cd "$(project)/src" && cp My\ Bot/MyBot.cs Evil\ Bot/EvilBot.cs
+	cd "$(project)/src" && \
+		echo 'namespace ChessChallenge.Example {' > Evil\ Bot/EvilBot.cs && \
+		sed 's/MyBot/EvilBot/g' My\ Bot/MyBot.cs >> Evil\ Bot/EvilBot.cs && \
+		echo '}' >> Evil\ Bot/EvilBot.cs
 .PHONY: compare
 compare: build-uci
 	cutechess-cli \
