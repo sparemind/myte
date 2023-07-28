@@ -1,4 +1,6 @@
-﻿using ChessChallenge.API;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ChessChallenge.API;
 
 public class MyBot : IChessBot
 {
@@ -24,6 +26,19 @@ public class MyBot : IChessBot
         var nodes = 0;
         var stop = false;
 
+        List<Move> generateRankedLegalMoves(bool capturesOnly)
+        {
+            int moveRank(Move move)
+            {
+                if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
+                return 0;
+            }
+
+            return (from move in board.GetLegalMoves(capturesOnly)
+                orderby moveRank(move) descending
+                select move).ToList();
+        }
+
         int quiescenceSearch(int ply, int alpha, int beta)
         {
             // Check 3-move repetition and 50-move rule
@@ -40,7 +55,7 @@ public class MyBot : IChessBot
             if (score >= beta) return beta;
             if (score > alpha) alpha = score;
 
-            var moves = board.GetLegalMoves(true);
+            var moves = generateRankedLegalMoves(true);
 
             // Is the game over?
             // if (moves.Length == 0)
@@ -77,10 +92,10 @@ public class MyBot : IChessBot
             // Check 3-move repetition and 50-move rule
             if (board.IsDraw()) return 0;
 
-            var moves = board.GetLegalMoves();
+            var moves = generateRankedLegalMoves(false);
 
             // Is the game over?
-            if (moves.Length == 0)
+            if (moves.Count == 0)
                 return board.IsInCheck() ? ply - 10000 : 0;
 
             var bestScore = -999999;
@@ -109,6 +124,9 @@ public class MyBot : IChessBot
             if (stop) break;
             bestMove = candidateBestMove;
         }
+
+        // TODO Fix check for no search complete
+        if (bestMove == default) return board.GetLegalMoves()[0];
 
         return bestMove;
     }
