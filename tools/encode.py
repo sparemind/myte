@@ -19,7 +19,9 @@ from dataclasses import dataclass
 
 @dataclass
 class ScoreTable:
-    a: int
+    name: str
+    table: [int]
+    compressed: [int]
 # piece move
 # piece capture
 # en passant
@@ -166,16 +168,26 @@ tables = [
     ],
 ]
 
-def generate_bitmaps(table: [int], range_limit: int) -> [int]:
+# Rescales the values in a table to fit within a given range. The range is compress equally from both ends.
+def rescale_table(table: [int], range_limit: int) -> [int]:
     min_val = min(table)
     max_val = max(table)
     diff = max_val - min_val
     rescale_range = diff
     
     if rescale_range > range_limit:
-        print(f"WARNING: range limit exceeded by {rescale_range-range_limit}")
+        compress_amount = (rescale_range - range_limit) // 2
         rescale_range = range_limit
-        table = [int((x-min_val)/diff * rescale_range + min_val) for x in table]
+        
+        new_min = min_val + compress_amount
+        table = [int((x-min_val)/diff * rescale_range + new_min) for x in table]
+    return table
+
+
+def generate_bitmaps(table: [int], range_limit: int) -> [int]:
+    min_val = min(table)
+    max_val = max(table)
+    diff = max_val - min_val
     
     table = [x-min_val for x in table]
     print(min_val, max_val, diff, table[:8])
@@ -208,7 +220,11 @@ def main():
         phase = phases[i//6]
         
         print(phase, piece)
-        (bitmaps, min_val) = generate_bitmaps(table, 128)
+        rescaled_table = rescale_table(table, 64)
+        if rescaled_table != table:
+            print(f"WARNING: table {i} rescaled from {max(table)-min(table)} to {max(rescaled_table)-min(rescaled_table)}")
+            
+        (bitmaps, min_val) = generate_bitmaps(rescaled_table, 64)
         final_bitmaps.extend(bitmaps)
         final_min_vals.append(min_val)
         i+=1
@@ -237,12 +253,19 @@ def main():
         for i in range(64):
             dynamic_data[bitmapIdx // 6 * 64 + i] += 1 << (bitmapIdx % 6) if final_bitmaps[bitmapIdx] & (1 << i) else 0
         
-#     j=0
-#     for idx in range(0, len(dynamic_data), 8):
-#         print(dynamic_data[idx:idx+8])
-#         j += 1
-#         if j % 8 == 0:
-#             print()
+    j=0
+    for idx in range(0, len(dynamic_data), 8):
+        print(dynamic_data[idx:idx+8])
+        j += 1
+        if j % 8 == 0:
+            print()
+            
+    names = ['baselines']
+    names += [f'{phase} {piece}' for phase in phases for piece in pieces]
+    for i, bitmap in enumerate(final_bitmaps):
+        print(f'{bitmap}, ', end='')
+        if i % 6 == 5:
+            print('//', names[i//6])
 
 if __name__ == "__main__":
     main()
