@@ -24,6 +24,9 @@ uci:
 .PHONY: uci-baseline
 uci-baseline:
 	cd $(project) && BASELINE=true dotnet run --project $(uci_proj) -c $(mode)
+.PHONY: encode
+encode:
+	python tools/encode.py
 
 
 .PHONY: baseline
