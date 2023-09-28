@@ -263,7 +263,7 @@ def main():
     names = ['baselines']
     names += [f'{phase} {piece}' for phase in phases for piece in pieces]
     for i, bitmap in enumerate(final_bitmaps):
-        print(f'{bitmap}, ', end='')
+        print(f'0x{bitmap:016x}, ', end='')
         if i % 6 == 5:
             print('//', names[i//6])
 
