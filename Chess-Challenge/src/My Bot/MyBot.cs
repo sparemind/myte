@@ -5,7 +5,9 @@ using ChessChallenge.API;
 
 public class MyBot : IChessBot
 {
-    (ulong, Move, int, int, byte)[] tt = new (ulong, Move, int, int, byte)[16777216];
+    // Transposition table. Entries are TODO size 
+    // (hash, bestMove, depth, score, nodeType)
+    readonly (ulong, Move, int, int, byte)[] tt = new (ulong, Move, int, int, byte)[16777216];
 
     public Move Think(Board board, Timer timer)
     {
@@ -72,18 +74,10 @@ public class MyBot : IChessBot
         // TODO add flag, don't always run
         populateData();
 
-
-        // Transposition table
-        // (hash, bestMove, depth, score, nodeType)
-        // var tt = new (ulong, Move, int, int, byte)[16777216];
-        //
-        // int adjustPliesToMate(int score, int plies, bool decrease)
-        // {
-        //     return score + (score > 900000 ? -plies : score < -900000 ? plies : 0) * (decrease ? 1 : -1);
-        // }
-
-        var nodes = 0;
-        var stop = false;
+        int adjustPliesToMate(int score, int plies, bool decrease)
+        {
+            return score + (score > 900000 ? -plies : score < -900000 ? plies : 0) * (decrease ? 1 : -1);
+        }
 
         List<Move> generateRankedLegalMoves(bool capturesOnly)
         {
@@ -98,45 +92,10 @@ public class MyBot : IChessBot
                 select move).ToList();
         }
 
-        int quiescenceSearch(int ply, int alpha, int beta)
-        {
-            // Check 3-move repetition and 50-move rule
-            if (board.IsDraw()) return 0;
-
-            dynamicData[0] = 0;
-            dynamicData[1] = 0;
-            foreach (var pieceList in board.GetAllPieceLists())
-                dynamicData[pieceList.IsWhitePieceList ? 1 : 0] +=
-                    staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
-            var score = dynamicData[1] - dynamicData[0];
-            if (!board.IsWhiteToMove) score = -score;
-
-            if (score >= beta) return beta;
-            if (score > alpha) alpha = score;
-
-            var moves = generateRankedLegalMoves(true);
-
-            // Is the game over?
-            // if (moves.Length == 0)
-            //     if (board.IsInCheck()) return ply - 10000;
-            //     else return 0;
-
-            foreach (var move in moves)
-            {
-                board.MakeMove(move);
-                var childScore = -quiescenceSearch(ply + 1, -beta, -alpha);
-                board.UndoMove(move);
-
-                if (childScore >= beta) return beta;
-                if (childScore > alpha) alpha = childScore;
-            }
-
-            return alpha;
-        }
-
-        Move bestMove = default;
-        Move candidateBestMove = default;
-        var limit = timer.MillisecondsRemaining / 20;
+        var nodes = 0;
+        var stop = false;
+        Move bestMove = default, candidateBestMove = default;
+        var limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
 
         // Negamax Alpha-Beta Pruning
         int search(int ply, int remainingDepth, int alpha, int beta)
@@ -144,60 +103,87 @@ public class MyBot : IChessBot
             // Check timer and exit early if past time limit
             if ((++nodes & 2047) == 0 && bestMove != default && timer.MillisecondsElapsedThisTurn > limit)
                 stop = true;
-            if (stop) return 0;
+            if (stop) return 0; // TODO: If tokens needed, change stop flag and nodes to a hard return
 
-            if (remainingDepth == 0 || ply > 50) return quiescenceSearch(ply, alpha, beta);
+            var inCheck = board.IsInCheck();
+            // Quiescence search is inlined to the regular search to save tokens since they're mostly identical.
+            // This flag controls whether we are in the main or quiescence search stage.
+            var qs = remainingDepth <= 0;
+
+            int temporaryEval()
+            {
+                dynamicData[8000] = 0;
+                dynamicData[8001] = 0;
+                foreach (var pieceList in board.GetAllPieceLists())
+                    dynamicData[pieceList.IsWhitePieceList ? 8001 : 8000] +=
+                        staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
+                var score = dynamicData[8001] - dynamicData[8000];
+                return board.IsWhiteToMove ? score : -score;
+            }
+
+
+            if (ply > 0 && board.IsDraw()) return 0; // TODO: Can change IsDraw to IsRepeatedPosition? Stalemate checked below
+            if (qs && (alpha = Math.Max(alpha, temporaryEval())) >= beta) return alpha;
+
+            var positionHash = board.ZobristKey;
+            var (ttHash, ttMove, ttDepth, ttScore, ttNodeType) = tt[positionHash & 16777215];
+            if (!qs // No point in TT probe in quiescence search, too expensive; TODO remove ^^^ and get tt_bestmove here
+                && beta - alpha == 1 // Isn't null window
+                && positionHash == ttHash // TT hit
+                && ply > 1
+                && ttDepth >= remainingDepth) // Not from a shallower search
+            {
+                var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
+                if (ttNodeType == 1) return mateAdjusted;
+                if (ttNodeType == 0 && mateAdjusted <= alpha) return alpha;
+                if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
+            }
+
+            // if (remainingDepth == 0 || ply > 50) return quiescenceSearch(ply, alpha, beta);
 
             // Check 3-move repetition and 50-move rule
-            if (board.IsDraw()) return 0;
+            // if (board.IsDraw()) return 0;
 
-            // Check transposition table
-            // if (ply > 1)
-            // {
-            //     var (ttHash, ttBestMove, ttDepth, ttScore, ttEntryType) = tt[board.ZobristKey & 16777215];
-            //     if (board.ZobristKey == ttHash)
-            //         if (ttDepth >= remainingDepth)
-            //         {
-            //             var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
-            //             // TODO Change to ternary
-            //             if (ttEntryType == 1) return mateAdjusted;
-            //             if (ttEntryType == 2 && mateAdjusted <= alpha) return alpha;
-            //             if (ttEntryType == 0 && mateAdjusted >= beta) return beta;
-            //         }
-            // }
+            var moves = generateRankedLegalMoves(qs);
 
-            var moves = generateRankedLegalMoves(false);
+            // TODO: Do this check before sorting in generateRankedLegalMoves()
+            // Is the game over? (If in quiet search, we don't want to return a mate score)
+            if (moves.Count == 0) return qs ? alpha : inCheck ? ply - 1_000_000 : 0;
 
-            // Is the game over?
-            if (moves.Count == 0)
-                return board.IsInCheck() ? ply - 1000000 : 0;
-
-            // var entryType = 2; // Upper Bound
             var bestScore = -99999999;
+            ttMove = default;
+            ttNodeType = 0; // Upper Bound
             foreach (var move in moves)
             {
                 board.MakeMove(move);
-                var childScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
+                // Reuse ttScore to save tokens 
+                ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
                 board.UndoMove(move);
 
-                if (childScore > bestScore)
+                if (ttScore > bestScore)
                 {
-                    bestScore = childScore;
-                    if (ply == 0) candidateBestMove = move;
+                    bestScore = ttScore;
+                    ttMove = move;
+
+                    if (ttScore > alpha)
+                    {
+                        alpha = ttScore;
+                        ttNodeType = 1; // Exact
+
+                        if (ply == 0) candidateBestMove = move;
+                        if (ttScore >= beta)
+                        {
+                            ttNodeType++; // (2) Lower Bound
+                            break;
+                        }
+                    }
                 }
-
-                if (childScore >= beta)
-                    // entryType = 0; // Lower Bound
-                    break;
-
-                if (childScore > alpha) alpha = childScore;
-                // entryType = 1; // Exact
             }
 
-            // if (!stop)
-            //     tt[board.ZobristKey & 16777215] =
-            //         (board.ZobristKey, candidateBestMove, remainingDepth, adjustPliesToMate(bestScore, ply, false),
-            //             entryType);
+            if (!stop)
+                tt[positionHash & 16777215] =
+                    (positionHash, ttMove, remainingDepth, adjustPliesToMate(bestScore, ply, false),
+                        ttNodeType);
 
             return bestScore;
         }
