@@ -76,7 +76,7 @@ public class MyBot : IChessBot
 
         int adjustPliesToMate(int score, int plies, bool decrease)
         {
-            return score + (score > 900000 ? -plies : score < -900000 ? plies : 0) * (decrease ? 1 : -1);
+            return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
         }
 
         List<Move> generateRankedLegalMoves(bool capturesOnly)
@@ -127,7 +127,7 @@ public class MyBot : IChessBot
 
             var positionHash = board.ZobristKey;
             var (ttHash, ttMove, ttDepth, ttScore, ttNodeType) = tt[positionHash & 16777215];
-            if (!qs // No point in TT probe in quiescence search, too expensive; TODO remove ^^^ and get tt_bestmove here
+            if (!qs // No point in TT probe in quiescence search, too expensive (TODO check); TODO remove ^^^ and get tt_bestmove here
                 && beta - alpha == 1 // Isn't null window
                 && positionHash == ttHash // TT hit
                 && ply > 1
