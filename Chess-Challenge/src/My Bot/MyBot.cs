@@ -33,7 +33,7 @@ public class MyBot : IChessBot
             // initData consists of chunks of six 64-bit bitmaps, one for each PieceType/GamePhase combination.
             ulong[] initData =
             {
-                0x00000000000018f2, 0x000000000000159c, 0x0000000000000794, 0x00000000000017ae, 0x0000000000001492, 0x0000000000000bec, // baselines
+                0x00000000000038f2, 0x000000000000359c, 0x0000000000002794, 0x00000000000037ae, 0x0000000000003492, 0x0000000000002bec, // baselines + constants
                 0xffd2870f398deeff, 0xfff44d31ae15f9ff, 0xff31ebb3b79f9fff, 0x00413135a6070f00, 0x0086beb6a778ff00, 0xff60404858ffffff, // midgame pawn
                 0x6827c6d7387c1b00, 0x49eec3c03d6ae712, 0x41dd2a547dd77d83, 0x8026ae73fce23d7c, 0xb5f92cc2e5c3feff, 0x0000503c3a3c0000, // midgame knight
                 0x8dc44db6246da000, 0x9e94de63d88afbff, 0xcf63c24cefc92808, 0x1395fb0a76ac73f7, 0xc01ffbdbcf0dfeff, 0x0060043c38f20000, // midgame bishop
@@ -92,6 +92,14 @@ public class MyBot : IChessBot
                 select move).ToList();
         }
 
+        // Initialize evaluation for the current board position. It will then be incrementally updated during the search.
+        // dynamicData[8000] = 0;
+        // dynamicData[8001] = 0;
+        // foreach (var pieceList in board.GetAllPieceLists())
+        //     dynamicData[pieceList.IsWhitePieceList ? 8001 : 8000] +=
+        //         staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
+
+
         var nodes = 0;
         var stop = false;
         Move bestMove = default, candidateBestMove = default;
@@ -114,9 +122,22 @@ public class MyBot : IChessBot
             {
                 dynamicData[8000] = 0;
                 dynamicData[8001] = 0;
+
+                // Piece material count
                 foreach (var pieceList in board.GetAllPieceLists())
                     dynamicData[pieceList.IsWhitePieceList ? 8001 : 8000] +=
                         staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
+                // Piece-square tables
+                foreach (var pieceList in board.GetAllPieceLists())
+                {
+                    var pieceType = pieceList.TypeOfPieceInList;
+                    var isWhite = pieceList.IsWhitePieceList;
+                    // 64*13 = 832
+                    foreach (var piece in pieceList)
+                        dynamicData[isWhite ? 8001 : 8000] +=
+                            dynamicData[(64 * (int)pieceType + piece.Square.Index) ^ (isWhite ? 56 : 0)];
+                }
+
                 var score = dynamicData[8001] - dynamicData[8000];
                 return board.IsWhiteToMove ? score : -score;
             }

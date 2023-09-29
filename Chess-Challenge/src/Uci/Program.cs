@@ -15,9 +15,9 @@ namespace ChessChallenge.Uci;
 // - go [wtime TIME | btime TIME]                               Searches for the best move
 // - quit                                                       Exits the program  
 // - baseline                                                   (custom) Runs the baseline bot version
-internal static class Program
+static class Program
 {
-    private const string StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    const string StartingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     public static void Main()
     {
@@ -50,7 +50,7 @@ internal static class Program
                     break;
                 case "uci":
                     var tag = IsBaselineBot() ? "-baseline" : "";
-                    Console.WriteLine($"id name Myte 0.3.0{tag}");
+                    Console.WriteLine($"id name Myte 0.4.0{tag}");
                     Console.WriteLine("sparemind");
                     Console.WriteLine("uciok");
                     break;
@@ -117,7 +117,7 @@ internal static class Program
     }
 
     // Returns the UCI string representation of a move (e.g. 'e2e4', 'a7a8q').
-    private static string MoveToString(Move move)
+    static string MoveToString(Move move)
     {
         var moveString = $"{move.StartSquare.Name}{move.TargetSquare.Name}";
         if (move.IsPromotion)

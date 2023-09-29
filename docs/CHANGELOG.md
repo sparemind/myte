@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.4.0 Piece Square Table Evaluation
+
+```
+Include midgame piece-square tables in evaluation.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 840/1024 (82.03% full) [+70 / +6.84%]
+
+Score of Myte 0.4.0 vs Myte 0.4.0-baseline: 92 - 11 - 13  [0.849] 116
+...      Myte 0.4.0 playing White: 44 - 5 - 8  [0.842] 57
+...      Myte 0.4.0 playing Black: 48 - 6 - 5  [0.856] 59
+...      White vs Black: 50 - 53 - 13  [0.487] 116
+Elo difference: 300.2 +/- 81.5, LOS: 100.0 %, DrawRatio: 11.2 %
+SPRT: llr 2.95 (100.1%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [218.7, 381.7]
+```
+
+
 ## v0.3.0 Transposition Table + Inlining Quiescence Search
 
 ```

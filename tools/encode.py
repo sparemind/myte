@@ -217,9 +217,9 @@ def main():
     final_min_vals = []
     for table in tables:
         piece = pieces[i%6]
-        phase = phases[i//6]
+#         phase = phases[i//6]
+        print(piece)
         
-        print(phase, piece)
         rescaled_table = rescale_table(table, 64)
         if rescaled_table != table:
             print(f"WARNING: table {i} rescaled from {max(table)-min(table)} to {max(rescaled_table)-min(rescaled_table)}")
@@ -243,9 +243,9 @@ def main():
     for i, bitmap in enumerate(bitmaps):
         print(f"  {2**i}\t{bitmap:064b} {bitmap}")
     
-    dynamic_data = [0] * (1+12)*64
+    dynamic_data = [0] * (1+len(tables))*64
 #     dynamic_data[0] = -68
-    for bitmapIdx in range((1+12)*6):
+    for bitmapIdx in range((1+len(tables))*6):
         if bitmapIdx % 6 == 0 and bitmapIdx // 6 != 0:
             offset = dynamic_data[bitmapIdx//6] # Only want to exec once for each 0..6 bitmap chunk
             for i in range(64):
@@ -260,12 +260,15 @@ def main():
         if j % 8 == 0:
             print()
             
-    names = ['baselines']
+    names = ['baselines + constants']
     names += [f'{phase} {piece}' for phase in phases for piece in pieces]
+    names += ['mirror indices']
     for i, bitmap in enumerate(final_bitmaps):
         print(f'0x{bitmap:016x}, ', end='')
         if i % 6 == 5:
             print('//', names[i//6])
+    print('Absolute Min:   ', absolute_min)
+    print('True Zero Offset:', -63-absolute_min)
 
 if __name__ == "__main__":
     main()
