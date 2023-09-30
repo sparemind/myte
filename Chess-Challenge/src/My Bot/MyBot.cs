@@ -82,10 +82,10 @@ public class MyBot : IChessBot
         }
 
         var nodes = 0;
-        var stop = false; // Early exit flag if over time limit
-        // canNMP = true; // Can try null move pruning
+        bool stop = false, // Early exit flag if over time limit
+            canNMP = true; // Can try null move pruning
         Move bestMove = default, candidateBestMove = default;
-        var limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
+        int phase = 0, mg = 0, eg = 0, limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
 
         // Negamax Alpha-Beta Pruning
         int search(int ply, int remainingDepth, int alpha, int beta)
@@ -105,7 +105,7 @@ public class MyBot : IChessBot
 
             int evaluate()
             {
-                int mg = 0, eg = 0, phase = 0;
+                phase = mg = eg = 0;
                 foreach (var color in new[] { true, false })
                 {
                     for (var pieceType = 1; pieceType < 7; pieceType++)
@@ -154,23 +154,23 @@ public class MyBot : IChessBot
                )
                 return ttScore - 80 * remainingDepth;
 
-            // var reduction = 2 + remainingDepth / 6;
-            // if (!qs &&
-            //     canNMP &&
-            //     !inCheck &&
-            //     beta - alpha == 1 &&
-            //     remainingDepth > reduction
-            //     // TODO add zugzwang check
-            //    )
-            // {
-            //     // board.Move
-            //     board.TrySkipTurn();
-            //     canNMP = false;
-            //     ttScore = -search(ply + 1, remainingDepth - 1 - reduction, -beta, 1 - beta);
-            //     canNMP = true;
-            //     board.UndoSkipTurn();
-            //     if (ttScore >= beta && ttScore < 900_000 && ttScore > -900_000) return beta;
-            // }
+            var reduction = 2 + remainingDepth / 6;
+            if (!qs &&
+                canNMP &&
+                !inCheck &&
+                // beta - alpha == 1 &&
+                // phase != 0 && // Zugzwang check TODO evaluate() may not always run; ok?
+                remainingDepth > reduction
+               )
+            {
+                // board.Move
+                board.TrySkipTurn();
+                canNMP = false;
+                ttScore = -search(ply + 1, remainingDepth - 1 - reduction, -beta, 1 - beta); // TODO remove -1 and combine with reduction; >=
+                canNMP = true;
+                board.UndoSkipTurn();
+                if (ttScore >= beta && ttScore < 900_000 && ttScore > -900_000) return beta; // TODO math.abs
+            }
 
             // if (remainingDepth == 0 || ply > 50) return quiescenceSearch(ply, alpha, beta);
 

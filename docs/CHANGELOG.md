@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.12.0 Null Move Pruning
+```
+Add null move pruning (without zugzwang check).
+
+Time Control:  inf/10+0.0
+Brain Capacity: 965/1024 (94.24% full) [+79 / +7.71%]
+
+Score of Myte 0.12.0 vs Myte 0.12.0-baseline: 207 - 131 - 162  [0.576] 500
+...      Myte 0.12.0 playing White: 92 - 73 - 85  [0.538] 250
+...      Myte 0.12.0 playing Black: 115 - 58 - 77  [0.614] 250
+...      White vs Black: 150 - 188 - 162  [0.462] 500
+Elo difference: 53.2 +/- 25.2, LOS: 100.0 %, DrawRatio: 32.4 %
+SPRT: llr 2.97 (100.8%), lbound -2.94, ubound 2.94 - H1 was accepted
+
+```
+
 ## v0.11.0 Static Null Move Pruning
 
 ```
