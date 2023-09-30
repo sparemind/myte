@@ -74,11 +74,6 @@ public class MyBot : IChessBot
         // TODO add flag, don't always run
         populateData();
 
-        // int getPstScore(int pieceTypeIndex, int gamePhaseOffset, int squareIndex, bool isWhite)
-        // {
-        //     return (isWhite ? 1 : -1) * dynamicData[(64 * pieceTypeIndex + gamePhaseOffset + squareIndex) ^ (isWhite ? 56 : 0)];
-        // }
-
         int adjustPliesToMate(int score, int plies, bool decrease)
         {
             return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
@@ -96,14 +91,6 @@ public class MyBot : IChessBot
                 orderby moveRank(move) descending
                 select move).ToList();
         }
-
-        // Initialize evaluation for the current board position. It will then be incrementally updated during the search.
-        // dynamicData[8000] = 0;
-        // dynamicData[8001] = 0;
-        // foreach (var pieceList in board.GetAllPieceLists())
-        //     dynamicData[pieceList.IsWhitePieceList ? 8001 : 8000] +=
-        //         staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
-
 
         var nodes = 0;
         var stop = false;
@@ -126,10 +113,6 @@ public class MyBot : IChessBot
 
             int evaluate()
             {
-                // dynamicData[8000] = 0; // Midgame Score
-                // dynamicData[8001] = 0; // Endgame Score
-                // dynamicData[8002] = 0; // Phase Value
-
                 int mg = 0, eg = 0, phase = 0;
                 foreach (var color in new[] { true, false })
                 {
@@ -150,28 +133,6 @@ public class MyBot : IChessBot
                 }
 
                 return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1);
-
-                // TODO could extract gamePhaseOffset to a global var and use while(gpo < 3) { ... gpo += 2; }
-                // foreach (var gamePhaseOffset in new[] { 0, 1 })
-                // foreach (var pieceList in board.GetAllPieceLists())
-                // {
-                //     var isWhite = pieceList.IsWhitePieceList;
-                //     int scoreIdx = 8000 + gamePhaseOffset,
-                //         pieceType = (int)pieceList.TypeOfPieceInList,
-                //         sign = isWhite ? 1 : -1;
-                //
-                //     // Material Count
-                //     // TODO include +- offset for endgame from base midgame value
-                //     dynamicData[scoreIdx] += sign * staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
-                //     dynamicData[8002] += gamePhaseOffset * pieceList.Count * dynamicData[13 + pieceType];
-                //
-                //     // Piece-square tables
-                //     foreach (var piece in pieceList)
-                //         dynamicData[scoreIdx] += sign * dynamicData[(64 * pieceType + 384 * gamePhaseOffset + piece.Square.Index) ^ (isWhite ? 56 : 0)];
-                // }
-                //
-                // // int mg = dynamicData[8001] - dynamicData[8000], eg = dynamicData[8003] - dynamicData[8002], phase = dynamicData[8002];
-                // return (dynamicData[8000] * dynamicData[8002] + dynamicData[8001] * (24 - dynamicData[8002])) / 24 * (board.IsWhiteToMove ? 1 : -1);
             }
 
 
@@ -208,72 +169,10 @@ public class MyBot : IChessBot
             ttNodeType = 0; // Upper Bound
             foreach (var move in moves)
             {
-                // +13 to get piece phase value
-
-                // piece move
-                // piece capture
-                // en passant
-                // castling (qk)
-                // promotion
-                // combos (capture + promotion)
-                // int scoreMg = dynamicData[8000],
-                //     scoreEg = dynamicData[8001],
-                //     phase = dynamicData[8002];
-                // var isWhite = board.IsWhiteToMove;
-                // int pieceType = (int)move.MovePieceType,
-                //     backwards = isWhite ? -8 : 8,
-                //     targetSqIdx = move.TargetSquare.Index;
-
-
-                /*
-                 * rmIdx1 = 64 * pieceType + move.startsquare.index \\ mirror
-                 * adIdx1 = 64 * (isPromotion ? 1 : (int)move.promotionpiecetype) + targetSqIdx \\ mirror
-                 * rmIdx2 = move.IsCapture ? 64 * (int)move.capturepiecetype + targetSqIdx : 0 + move.isenpassant ? backwards : 0 \\ mirror
-                 * castling
-                 */
-
-
-                // foreach (var gamePhaseOffset in new[] { 0, 384 })
-                // {
-                //     var scoreIdx = 8000 + gamePhaseOffset / 384;
-                //
-                // 
-                //
-                //     dynamicData[scoreIdx] -= getPstScore(pieceType, gamePhaseOffset, move.StartSquare.Index, isWhite); // Remove from start
-                //     if (move.IsPromotion)
-                //         dynamicData[scoreIdx] += getPstScore((int)move.PromotionPieceType, gamePhaseOffset, targetSqIdx, isWhite); // Add promo piece to target
-                //     else
-                //         dynamicData[scoreIdx] += getPstScore(pieceType, gamePhaseOffset, targetSqIdx, isWhite); // Add moved piece to target
-                //     if (move.IsCapture)
-                //         if (move.IsEnPassant)
-                //             dynamicData[scoreIdx] += getPstScore(1, gamePhaseOffset, targetSqIdx + backwards, !isWhite); // Remove captured pawn
-                //         else
-                //             dynamicData[scoreIdx] += getPstScore((int)move.CapturePieceType, gamePhaseOffset, targetSqIdx, !isWhite); // Remove captured piece
-                // }
-
-                // dynamicData[scoreIdx] -= sign * dynamicData[(64 * pieceType + gamePhaseOffset + move.StartSquare.Index) ^ mirror]; // Remove from start
-                // if (move.IsPromotion)
-                //     dynamicData[scoreIdx] +=
-                //         sign * dynamicData[(64 * (int)move.PromotionPieceType + gamePhaseOffset + targetSqIdx) ^ mirror]; // Add promo piece to target
-                // else
-                //     dynamicData[scoreIdx] += sign * dynamicData[(64 * pieceType + gamePhaseOffset + targetSqIdx) ^ mirror]; // Add moved piece to target
-                // if (move.IsCapture)
-                // {
-                //     if (move.IsEnPassant)
-                //         dynamicData[scoreIdx] += sign * dynamicData[(64 + gamePhaseOffset + targetSqIdx + backwards) ^ antiMirror]; // Remove captured pawn
-                //     else
-                //         dynamicData[scoreIdx] +=
-                //             sign * dynamicData[(64 * (int)move.CapturePieceType + gamePhaseOffset + targetSqIdx) ^ antiMirror]; // Remove captured piece
-                // }
-
                 board.MakeMove(move);
                 // Reuse ttScore to save tokens 
                 ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
                 board.UndoMove(move);
-
-                // dynamicData[8000] = scoreMg;
-                // dynamicData[8001] = scoreEg;
-                // dynamicData[8002] = phase;
 
                 if (ttScore > bestScore)
                 {
