@@ -27,7 +27,7 @@ public class MyBot : IChessBot
         var dynamicData = new int[8192]; // 8 * 1024
         var killerMoves = new Move[128];
         // var counterMoves = new Move[2, 64, 64];
-        // var counterMoves = new Move[8192]; // 64x64x2 table
+        var counterMoves = new Move[8192]; // 64x64x2 table
         // var history = new int[4096]; // 64x64 butterfly table
 
         void populateData()
@@ -76,10 +76,10 @@ public class MyBot : IChessBot
         // TODO add flag, don't always run
         populateData();
 
-        int adjustPliesToMate(int score, int plies, bool decrease)
-        {
-            return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
-        }
+        // int adjustPliesToMate(int score, int plies, bool decrease)
+        // {
+        //     return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
+        // }
 
         var nodes = 0;
         bool stop = false, // Early exit flag if over time limit
@@ -139,7 +139,8 @@ public class MyBot : IChessBot
                 && ply > 1
                 && ttDepth >= remainingDepth) // Not from a shallower search
             {
-                var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
+                // var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
+                var mateAdjusted = ttScore;
                 if (ttNodeType == 1) return mateAdjusted;
                 if (ttNodeType == 0 && mateAdjusted <= alpha) return alpha;
                 if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
@@ -180,12 +181,15 @@ public class MyBot : IChessBot
             // TODO make non alloc?
             var moves = board.GetLegalMoves(qs);
             var moveRanks = new int[moves.Length];
-            var moveIdx = 0; //, cmOffset = board.IsWhiteToMove ? 0 : 4096; //, rankBonus = 0;
+            int moveIdx = 0, cmOffset = board.IsWhiteToMove ? 0 : 4096; //, rankBonus = 0;
             foreach (var move in moves)
                 // move == killerMoves[ply, 1] ? 500 :
+                // moveRanks[moveIdx++] = -(move == ttMove ? 50_000 :
+                //     move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType :
+                //     move == killerMoves[ply] ? 501 : 0);
                 moveRanks[moveIdx++] = -(move == ttMove ? 50_000 :
                     move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType :
-                    move == killerMoves[ply] ? 501 : 0);
+                    ((move == killerMoves[ply] ? 501 : 0) + (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0)));
             // ((move == killerMoves[ply] ? 501 : 0) +
             // (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0)));
             // (move == counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] ? 10 : 0)));
@@ -238,7 +242,7 @@ public class MyBot : IChessBot
                                 killerMoves[ply] = move;
                             // (killerMoves[ply, 1], killerMoves[ply, 0]) = (killerMoves[ply, 0], move);
                             // counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] = move;
-                            // counterMoves[cmOffset + (move.RawValue & 4095)] = move;
+                            counterMoves[cmOffset + (move.RawValue & 4095)] = move;
                             ttNodeType++; // (2) Lower Bound
                             break;
                         }
@@ -247,9 +251,10 @@ public class MyBot : IChessBot
             }
 
             if (!stop)
-                tt[positionHash & 16777215] =
-                    (positionHash, ttMove, remainingDepth, adjustPliesToMate(bestScore, ply, false),
-                        ttNodeType);
+                // tt[positionHash & 16777215] =
+                //     (positionHash, ttMove, remainingDepth, adjustPliesToMate(bestScore, ply, false),
+                //         ttNodeType);
+                tt[positionHash & 16777215] = (positionHash, ttMove, remainingDepth, bestScore, ttNodeType);
 
             return bestScore;
         }

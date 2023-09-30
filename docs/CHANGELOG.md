@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.14.0 Countermove Heuristic + Simplify TT
+```
+Add countermove heuristic and simplify transposition table to not adjust mate plies.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 999/1024 (97.56% full) [+3 / +0.29%]
+
+Score of Myte 0.14.0 vs Myte 0.14.0-baseline: 419 - 333 - 356  [0.539] 1108
+...      Myte 0.14.0 playing White: 209 - 169 - 176  [0.536] 554
+...      Myte 0.14.0 playing Black: 210 - 164 - 180  [0.542] 554
+...      White vs Black: 373 - 379 - 356  [0.497] 1108
+Elo difference: 27.0 +/- 16.9, LOS: 99.9 %, DrawRatio: 32.1 %
+SPRT: llr 2.98 (101.3%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [10.1, 43.9]
+```
+
 ## v0.13.0 Principal Variation Search
 
 ```
@@ -30,7 +46,7 @@ Score of Myte 0.12.0 vs Myte 0.12.0-baseline: 207 - 131 - 162  [0.576] 500
 ...      White vs Black: 150 - 188 - 162  [0.462] 500
 Elo difference: 53.2 +/- 25.2, LOS: 100.0 %, DrawRatio: 32.4 %
 SPRT: llr 2.97 (100.8%), lbound -2.94, ubound 2.94 - H1 was accepted
-
+Elo Gain Bounds: [28.0, 78.4]
 ```
 
 ## v0.11.0 Static Null Move Pruning
