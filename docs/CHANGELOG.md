@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.7.0 Inline move ranking and remove LINQ usage
+
+```
+Inline move ranking and ordering and replace LINQ usage with Array.sort().
+
+Time Control:  inf/10+0.0
+Brain Capacity: 824/1024 (80.47% full) [-16 / -1.56%]
+
+Score of Myte 0.7.0 vs Myte 0.7.0-baseline: 227 - 140 - 96  [0.594] 463
+...      Myte 0.7.0 playing White: 109 - 72 - 51  [0.580] 232
+...      Myte 0.7.0 playing Black: 118 - 68 - 45  [0.608] 231
+...      White vs Black: 177 - 190 - 96  [0.486] 463
+Elo difference: 66.1 +/- 28.6, LOS: 100.0 %, DrawRatio: 20.7 %
+SPRT: llr 2.95 (100.1%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [37.5, 94.7]
+```
+
 ## v0.6.0 Optimize Evaluation
 ```
 Change evaluation function to use bitboards and combine the white/black score accumulators.

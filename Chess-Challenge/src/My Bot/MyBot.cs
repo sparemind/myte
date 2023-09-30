@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ChessChallenge.API;
 
 public class MyBot : IChessBot
@@ -79,18 +77,18 @@ public class MyBot : IChessBot
             return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
         }
 
-        List<Move> generateRankedLegalMoves(bool capturesOnly)
-        {
-            int moveRank(Move move)
-            {
-                if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
-                return 0;
-            }
-
-            return (from move in board.GetLegalMoves(capturesOnly)
-                orderby moveRank(move) descending
-                select move).ToList();
-        }
+        // List<Move> generateRankedLegalMoves(bool capturesOnly)
+        // {
+        //     int moveRank(Move move)
+        //     {
+        //         if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
+        //         return 0;
+        //     }
+        //
+        //     return (from move in board.GetLegalMoves(capturesOnly)
+        //         orderby moveRank(move) descending
+        //         select move).ToList();
+        // }
 
         var nodes = 0;
         var stop = false;
@@ -158,17 +156,40 @@ public class MyBot : IChessBot
             // Check 3-move repetition and 50-move rule
             // if (board.IsDraw()) return 0;
 
-            var moves = generateRankedLegalMoves(qs);
+            // var moves = generateRankedLegalMoves(qs);
+
+            var moves = board.GetLegalMoves(qs);
+            var moveRanks = new int[moves.Length];
+            var moveIdx = 0;
+            foreach (var move in moves) moveRanks[moveIdx++] = -(move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType : 0);
+            Array.Sort(moveRanks, moves);
+
+            // int moveRank(Move move)
+            // {
+            //     if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
+            //     return 0;
+            // }
+            //
+            // return (from move in board.GetLegalMoves(capturesOnly)
+            //     orderby moveRank(move) descending
+            //     select move).ToList();
 
             // TODO: Do this check before sorting in generateRankedLegalMoves()
             // Is the game over? (If in quiet search, we don't want to return a mate score)
-            if (moves.Count == 0) return qs ? alpha : inCheck ? ply - 1_000_000 : 0;
+            if (moves.Length == 0) return qs ? alpha : inCheck ? ply - 1_000_000 : 0;
 
             var bestScore = -99999999;
             ttMove = default;
             ttNodeType = 0; // Upper Bound
+            // for (var i = 0; i < moves.Length; i++)
             foreach (var move in moves)
             {
+                // TODO: Incremental sorting with selection sort. Re-enable once more ordering heuristics are added. Remove -(...) from moveRanks
+                // for (var j = i + 1; j < moves.Length; j++)
+                //     if (moveRanks[j] > moveRanks[i])
+                //         (moveRanks[i], moveRanks[j], moves[i], moves[j]) = (moveRanks[j], moveRanks[i], moves[j], moves[i]);
+                //
+                // var move = moves[i];
                 board.MakeMove(move);
                 // Reuse ttScore to save tokens 
                 ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
