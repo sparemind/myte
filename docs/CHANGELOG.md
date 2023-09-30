@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.6.0 Optimize Evaluation
+```
+Change evaluation function to use bitboards and combine the white/black score accumulators.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 840/1024 (82.03% full) [-54 / -5.23%]
+
+Score of Myte 0.6.0 vs Myte 0.6.0-baseline: 103 - 27 - 37  [0.728] 167
+...      Myte 0.6.0 playing White: 51 - 14 - 19  [0.720] 84
+...      Myte 0.6.0 playing Black: 52 - 13 - 18  [0.735] 83
+...      White vs Black: 64 - 66 - 37  [0.494] 167
+Elo difference: 170.6 +/- 50.7, LOS: 100.0 %, DrawRatio: 22.2 %
+SPRT: llr 2.96 (100.7%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [119.9, 221.3]
+```
+
 ## v0.5.1 Reduce token usage in evaluation
 ```
 (Regression check) Reduce token usage in evaluation and re-arrange scores to be contiguous.
