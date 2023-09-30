@@ -25,6 +25,7 @@ public class MyBot : IChessBot
         // 2 = endgame black
         // 3 = endgame white
         var dynamicData = new int[8192]; // 8 * 1024
+        var killerMoves = new Move[128];
 
         void populateData()
         {
@@ -147,7 +148,11 @@ public class MyBot : IChessBot
             var moveRanks = new int[moves.Length];
             var moveIdx = 0;
             foreach (var move in moves)
-                moveRanks[moveIdx++] = -(move == ttMove ? 50_000 : move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType : 0);
+                moveRanks[moveIdx++] = -(move == ttMove ? 50_000 :
+                    move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType :
+                    move == killerMoves[ply] ? 501 :
+                    // move == killerMoves[ply, 1] ? 500 :
+                    0);
             Array.Sort(moveRanks, moves);
 
             // TODO: Do this check before sorting in generateRankedLegalMoves()
@@ -184,6 +189,11 @@ public class MyBot : IChessBot
                         if (ply == 0) candidateBestMove = move;
                         if (ttScore >= beta)
                         {
+                            // Record heuristics for quiet moves
+                            if (!move.IsCapture)
+                                // if (killerMoves[ply, 0] != move)
+                                killerMoves[ply] = move;
+                            // (killerMoves[ply, 1], killerMoves[ply, 0]) = (killerMoves[ply, 0], move);
                             ttNodeType++; // (2) Lower Bound
                             break;
                         }

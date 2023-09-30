@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.9.0 Move Ordering: Killer Moves
+```
+Add a 1 bucket killer moves table and use in move ordering for non-captures.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 856/1024 (83.60% full) [+26 / +2.53%]
+
+Score of Myte 0.9.0 vs Myte 0.9.0-baseline: 400 - 309 - 228  [0.549] 937
+...      Myte 0.9.0 playing White: 193 - 163 - 112  [0.532] 468
+...      Myte 0.9.0 playing Black: 207 - 146 - 116  [0.565] 469
+...      White vs Black: 339 - 370 - 228  [0.483] 937
+Elo difference: 33.8 +/- 19.4, LOS: 100.0 %, DrawRatio: 24.3 %
+SPRT: llr 2.96 (100.5%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [14.4, 53.2]
+```
+
 ## v0.8.0 Move Ordering: Transposition Table Move
 
 ```
