@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.10.0 Check Extensions
+
+```
+Extends the search when in check to avoid entering quiescence search while in check.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 861/1024 (84.08% full) [+5 / +0.49%]
+
+Score of Myte 0.10.0 vs Myte 0.10.0-baseline: 154 - 74 - 75  [0.632] 303
+...      Myte 0.10.0 playing White: 78 - 39 - 34  [0.629] 151
+...      Myte 0.10.0 playing Black: 76 - 35 - 41  [0.635] 152
+...      White vs Black: 113 - 115 - 75  [0.497] 303
+Elo difference: 94.0 +/- 34.8, LOS: 100.0 %, DrawRatio: 24.8 %
+SPRT: llr 2.97 (101.0%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [59.2, 128.8]
+```
+
 ## v0.9.0 Move Ordering: Killer Moves
 ```
 Add a 1 bucket killer moves table and use in move ordering for non-captures.

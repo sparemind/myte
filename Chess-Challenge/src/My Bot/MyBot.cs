@@ -26,6 +26,9 @@ public class MyBot : IChessBot
         // 3 = endgame white
         var dynamicData = new int[8192]; // 8 * 1024
         var killerMoves = new Move[128];
+        // var counterMoves = new Move[2, 64, 64];
+        // var counterMoves = new Move[8192]; // 64x64x2 table
+        // var history = new int[4096]; // 64x64 butterfly table
 
         void populateData()
         {
@@ -79,7 +82,8 @@ public class MyBot : IChessBot
         }
 
         var nodes = 0;
-        var stop = false;
+        var stop = false; // Early exit flag if over time limit
+        // canNMP = true; // Can try null move pruning
         Move bestMove = default, candidateBestMove = default;
         var limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
 
@@ -93,6 +97,8 @@ public class MyBot : IChessBot
             // if (bestMove != default && timer.MillisecondsElapsedThisTurn > limit) return 0;
 
             var inCheck = board.IsInCheck();
+            if (inCheck) remainingDepth++; // Don't want to enter quiescence search if in check
+
             // Quiescence search is inlined to the regular search to save tokens since they're mostly identical.
             // This flag controls whether we are in the main or quiescence search stage.
             var qs = remainingDepth <= 0;
@@ -139,20 +145,41 @@ public class MyBot : IChessBot
                 if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
             }
 
+            // var reduction = 2 + remainingDepth / 6;
+            // if (!qs &&
+            //     canNMP &&
+            //     !inCheck &&
+            //     beta - alpha == 1 &&
+            //     remainingDepth > reduction
+            //     // TODO add zugzwang check
+            //    )
+            // {
+            //     // board.Move
+            //     board.TrySkipTurn();
+            //     canNMP = false;
+            //     ttScore = -search(ply + 1, remainingDepth - 1 - reduction, -beta, 1 - beta);
+            //     canNMP = true;
+            //     board.UndoSkipTurn();
+            //     if (ttScore >= beta && ttScore < 900_000 && ttScore > -900_000) return beta;
+            // }
+
             // if (remainingDepth == 0 || ply > 50) return quiescenceSearch(ply, alpha, beta);
 
             // Check 3-move repetition and 50-move rule
             // if (board.IsDraw()) return 0;
 
+            // TODO make non alloc?
             var moves = board.GetLegalMoves(qs);
             var moveRanks = new int[moves.Length];
-            var moveIdx = 0;
+            var moveIdx = 0; //, cmOffset = board.IsWhiteToMove ? 0 : 4096; //, rankBonus = 0;
             foreach (var move in moves)
+                // move == killerMoves[ply, 1] ? 500 :
                 moveRanks[moveIdx++] = -(move == ttMove ? 50_000 :
                     move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType :
-                    move == killerMoves[ply] ? 501 :
-                    // move == killerMoves[ply, 1] ? 500 :
-                    0);
+                    move == killerMoves[ply] ? 501 : 0);
+            // ((move == killerMoves[ply] ? 501 : 0) +
+            // (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0)));
+            // (move == counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] ? 10 : 0)));
             Array.Sort(moveRanks, moves);
 
             // TODO: Do this check before sorting in generateRankedLegalMoves()
@@ -194,6 +221,8 @@ public class MyBot : IChessBot
                                 // if (killerMoves[ply, 0] != move)
                                 killerMoves[ply] = move;
                             // (killerMoves[ply, 1], killerMoves[ply, 0]) = (killerMoves[ply, 0], move);
+                            // counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] = move;
+                            // counterMoves[cmOffset + (move.RawValue & 4095)] = move;
                             ttNodeType++; // (2) Lower Bound
                             break;
                         }
