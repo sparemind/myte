@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.11.0 Static Null Move Pruning
+
+```
+Add basic static null move pruning.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 886/1024 (80.57% full) [+25 / +2.44%]
+
+Score of Myte 0.11.0 vs Myte 0.11.0-baseline: 140 - 66 - 87  [0.626] 293
+...      Myte 0.11.0 playing White: 65 - 38 - 43  [0.592] 146
+...      Myte 0.11.0 playing Black: 75 - 28 - 44  [0.660] 147
+...      White vs Black: 93 - 113 - 87  [0.466] 293
+Elo difference: 89.7 +/- 34.1, LOS: 100.0 %, DrawRatio: 29.7 %
+SPRT: llr 2.95 (100.3%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [55.6, 123.8]
+```
+
 ## v0.10.0 Check Extensions
 
 ```

@@ -145,6 +145,15 @@ public class MyBot : IChessBot
                 if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
             }
 
+            // TODO add checkmate check for beta?
+            if (!qs &&
+                !inCheck &&
+                (ttScore = evaluate()) - 80 * remainingDepth >= beta
+                // beta - alpha == 1 && // TODO extract
+                // remainingDepth < 7
+               )
+                return ttScore - 80 * remainingDepth;
+
             // var reduction = 2 + remainingDepth / 6;
             // if (!qs &&
             //     canNMP &&
