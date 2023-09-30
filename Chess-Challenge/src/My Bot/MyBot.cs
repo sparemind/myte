@@ -77,19 +77,6 @@ public class MyBot : IChessBot
             return score + (score > 900_000 ? -plies : score < -900_000 ? plies : 0) * (decrease ? 1 : -1);
         }
 
-        // List<Move> generateRankedLegalMoves(bool capturesOnly)
-        // {
-        //     int moveRank(Move move)
-        //     {
-        //         if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
-        //         return 0;
-        //     }
-        //
-        //     return (from move in board.GetLegalMoves(capturesOnly)
-        //         orderby moveRank(move) descending
-        //         select move).ToList();
-        // }
-
         var nodes = 0;
         var stop = false;
         Move bestMove = default, candidateBestMove = default;
@@ -163,16 +150,6 @@ public class MyBot : IChessBot
             var moveIdx = 0;
             foreach (var move in moves) moveRanks[moveIdx++] = -(move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType : 0);
             Array.Sort(moveRanks, moves);
-
-            // int moveRank(Move move)
-            // {
-            //     if (move.IsCapture) return ((int)move.CapturePieceType << 4) + 8 - (int)move.MovePieceType;
-            //     return 0;
-            // }
-            //
-            // return (from move in board.GetLegalMoves(capturesOnly)
-            //     orderby moveRank(move) descending
-            //     select move).ToList();
 
             // TODO: Do this check before sorting in generateRankedLegalMoves()
             // Is the game over? (If in quiet search, we don't want to return a mate score)
