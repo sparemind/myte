@@ -85,7 +85,7 @@ public class MyBot : IChessBot
         bool stop = false, // Early exit flag if over time limit
             canNMP = true; // Can try null move pruning
         Move bestMove = default, candidateBestMove = default;
-        int phase = 0, mg = 0, eg = 0, limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
+        int phase, mg, eg, limit = timer.MillisecondsRemaining / 20; // TODO inline if not reused
 
         // Negamax Alpha-Beta Pruning
         int search(int ply, int remainingDepth, int alpha, int beta)
@@ -149,7 +149,7 @@ public class MyBot : IChessBot
             if (!qs &&
                 !inCheck &&
                 (ttScore = evaluate()) - 80 * remainingDepth >= beta
-                // beta - alpha == 1 && // TODO extract
+                // && beta - alpha == 1 // TODO extract
                 // remainingDepth < 7
                )
                 return ttScore - 80 * remainingDepth;
@@ -207,9 +207,16 @@ public class MyBot : IChessBot
                 //         (moveRanks[i], moveRanks[j], moves[i], moves[j]) = (moveRanks[j], moveRanks[i], moves[j], moves[i]);
                 //
                 // var move = moves[i];
+
                 board.MakeMove(move);
+                // Principal Variation Search
                 // Reuse ttScore to save tokens 
-                ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
+                if (moveIdx++ == 0 // Use full window for first move (TT move)
+                    || qs // Don't do PVS in quiescence search
+                    || move.IsCapture // Use full window for captures
+                    || remainingDepth < 2 // No point in PVS for shallow searches
+                    || (ttScore = -search(ply + 1, remainingDepth - 1, -alpha - 1, -alpha)) > alpha)
+                    ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
                 board.UndoMove(move);
 
                 if (ttScore > bestScore)

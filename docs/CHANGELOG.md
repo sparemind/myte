@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.13.0 Principal Variation Search
+
+```
+Use principal variation search for non-shallow, non-quiescent searches
+
+Time Control:  inf/10+0.0
+Brain Capacity: 996/1024 (97.27% full) [+31 / +3.03%]
+
+Score of Myte 0.13.0 vs Myte 0.13.0-baseline: 202 - 125 - 145  [0.582] 472
+...      Myte 0.13.0 playing White: 87 - 69 - 80  [0.538] 236
+...      Myte 0.13.0 playing Black: 115 - 56 - 65  [0.625] 236
+...      White vs Black: 143 - 184 - 145  [0.457] 472
+Elo difference: 57.2 +/- 26.3, LOS: 100.0 %, DrawRatio: 30.7 %
+SPRT: llr 2.96 (100.5%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [30.9, 83.5]
+```
+
 ## v0.12.0 Null Move Pruning
 ```
 Add null move pruning (without zugzwang check).
