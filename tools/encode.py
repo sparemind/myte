@@ -231,6 +231,7 @@ def main():
 
     final_min_vals = [x-absolute_min for x in final_min_vals] # Account for abs min being hardcoded
     final_min_vals = [0] + final_min_vals # prepend absolute_min (which is normalized to 0)
+    final_min_vals += [0, 0, 1, 1, 2, 4, 0] # piece phase values
     print('final_min_vals', [x+0 for x in final_min_vals], '(includes baseline table min value)') 
     
     (bitmaps, min_val) = generate_bitmaps(final_min_vals, 64)

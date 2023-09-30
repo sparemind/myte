@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.5.0 PST Tapered Evaluation
+```
+Add tapered evaluation for piece-square tables.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 904/1024 (88.28% full) [+64 / +6.25%]
+
+Score of Myte 0.5.0 vs Myte 0.5.0-baseline: 228 - 133 - 54  [0.614] 415
+...      Myte 0.5.0 playing White: 115 - 63 - 29  [0.626] 207
+...      Myte 0.5.0 playing Black: 113 - 70 - 25  [0.603] 208
+...      White vs Black: 185 - 176 - 54  [0.511] 415
+Elo difference: 81.0 +/- 32.0, LOS: 100.0 %, DrawRatio: 13.0 %
+SPRT: llr 2.97 (100.9%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [49.0, 113.0]
+```
+
 ## v0.4.0 Piece Square Table Evaluation
 
 ```

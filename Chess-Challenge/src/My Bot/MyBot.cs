@@ -33,7 +33,7 @@ public class MyBot : IChessBot
             // initData consists of chunks of six 64-bit bitmaps, one for each PieceType/GamePhase combination.
             ulong[] initData =
             {
-                0x00000000000038f2, 0x000000000000359c, 0x0000000000002794, 0x00000000000037ae, 0x0000000000003492, 0x0000000000002bec, // baselines + constants
+                0x00000000000198f2, 0x000000000002159c, 0x0000000000040794, 0x00000000000017ae, 0x0000000000001492, 0x0000000000000bec, // baselines + constants
                 0xffd2870f398deeff, 0xfff44d31ae15f9ff, 0xff31ebb3b79f9fff, 0x00413135a6070f00, 0x0086beb6a778ff00, 0xff60404858ffffff, // midgame pawn
                 0x6827c6d7387c1b00, 0x49eec3c03d6ae712, 0x41dd2a547dd77d83, 0x8026ae73fce23d7c, 0xb5f92cc2e5c3feff, 0x0000503c3a3c0000, // midgame knight
                 0x8dc44db6246da000, 0x9e94de63d88afbff, 0xcf63c24cefc92808, 0x1395fb0a76ac73f7, 0xc01ffbdbcf0dfeff, 0x0060043c38f20000, // midgame bishop
@@ -120,26 +120,37 @@ public class MyBot : IChessBot
 
             int temporaryEval()
             {
-                dynamicData[8000] = 0;
-                dynamicData[8001] = 0;
+                dynamicData[8000] = 0; // Black Midgame Score
+                dynamicData[8001] = 0; // White Midgame Score
+                dynamicData[8002] = 0; // Phase Value
 
-                // Piece material count
-                foreach (var pieceList in board.GetAllPieceLists())
-                    dynamicData[pieceList.IsWhitePieceList ? 8001 : 8000] +=
-                        staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
-                // Piece-square tables
+                dynamicData[8004] = 0; // Black Endgame Score
+                dynamicData[8005] = 0; // White Endgame Score
+
+                foreach (var gamePhaseOffset in new[] { 0, 384 })
                 foreach (var pieceList in board.GetAllPieceLists())
                 {
                     var pieceType = pieceList.TypeOfPieceInList;
                     var isWhite = pieceList.IsWhitePieceList;
-                    // 64*13 = 832
+
+                    // Material Count
+                    // TODO include +- offset for endgame from base midgame value
+                    dynamicData[(pieceList.IsWhitePieceList ? 8001 : 8000) + gamePhaseOffset / 96] +=
+                        staticData[(int)pieceList.TypeOfPieceInList] * pieceList.Count;
+                    // if (gamePhaseOffset == 0)
+                    dynamicData[8002] += pieceList.Count * dynamicData[13 + (int)pieceType];
+
+                    // Piece-square tables
                     foreach (var piece in pieceList)
-                        dynamicData[isWhite ? 8001 : 8000] +=
-                            dynamicData[(64 * (int)pieceType + piece.Square.Index) ^ (isWhite ? 56 : 0)];
+                        dynamicData[(isWhite ? 8001 : 8000) + gamePhaseOffset / 96] +=
+                            dynamicData[(64 * (int)pieceType + gamePhaseOffset + piece.Square.Index) ^ (isWhite ? 56 : 0)];
                 }
 
-                var score = dynamicData[8001] - dynamicData[8000];
-                return board.IsWhiteToMove ? score : -score;
+                dynamicData[8002] /= 2; // Undo double counting
+
+                var mg = dynamicData[8001] - dynamicData[8000];
+                var eg = dynamicData[8005] - dynamicData[8004];
+                return (mg * dynamicData[8002] + eg * (24 - dynamicData[8002])) / 24 * (board.IsWhiteToMove ? 1 : -1);
             }
 
 
@@ -176,10 +187,36 @@ public class MyBot : IChessBot
             ttNodeType = 0; // Upper Bound
             foreach (var move in moves)
             {
+                // +13 to get piece phase value
+
+
+                // piece move
+                // piece capture
+                // en passant
+                // castling (qk)
+                // promotion
+                // combos (capture + promotion)
+                // int blackScore = dynamicData[8000], whiteScore = dynamicData[8001];
+                // var isWhite = board.IsWhiteToMove;
+                // var pieceType = move.MovePieceType;
+                //
+                // dynamicData[isWhite ? 8001 : 8000] -=
+                //     dynamicData[(64 * (int)pieceType + move.StartSquare.Index) ^ (isWhite ? 56 : 0)];
+                // dynamicData[isWhite ? 8001 : 8000] +=
+                //     dynamicData[(64 * (int)pieceType + move.TargetSquare.Index) ^ (isWhite ? 56 : 0)];
+                // if (move.IsCapture)
+                //     dynamicData[isWhite ? 8000 : 8001] -= move.IsEnPassant
+                //         ? dynamicData[(64 + move.TargetSquare.Index + (isWhite ? -8 : 8)) ^ (isWhite ? 0 : 56)]
+                //         : dynamicData[(64 * (int)pieceType + move.TargetSquare.Index) ^ (isWhite ? 0 : 56)];
+                // if (move.IsCastles) {}
+
                 board.MakeMove(move);
                 // Reuse ttScore to save tokens 
                 ttScore = -search(ply + 1, remainingDepth - 1, -beta, -alpha);
                 board.UndoMove(move);
+
+                // dynamicData[8000] = blackScore;
+                // dynamicData[8001] = whiteScore;
 
                 if (ttScore > bestScore)
                 {
