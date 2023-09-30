@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.8.0 Move Ordering: Transposition Table Move
+
+```
+Order transposition table moves first.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 830/1024 (81.05% full) [+6 / +0.59%]
+
+Score of Myte 0.8.0 vs Myte 0.8.0-baseline: 113 - 33 - 35  [0.721] 181
+...      Myte 0.8.0 playing White: 55 - 17 - 19  [0.709] 91
+...      Myte 0.8.0 playing Black: 58 - 16 - 16  [0.733] 90
+...      White vs Black: 71 - 75 - 35  [0.489] 181
+Elo difference: 164.9 +/- 49.6, LOS: 100.0 %, DrawRatio: 19.3 %
+SPRT: llr 2.95 (100.1%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [115.3, 214.5]
+```
+
 ## v0.7.0 Inline move ranking and remove LINQ usage
 
 ```

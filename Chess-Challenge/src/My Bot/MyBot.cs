@@ -143,12 +143,11 @@ public class MyBot : IChessBot
             // Check 3-move repetition and 50-move rule
             // if (board.IsDraw()) return 0;
 
-            // var moves = generateRankedLegalMoves(qs);
-
             var moves = board.GetLegalMoves(qs);
             var moveRanks = new int[moves.Length];
             var moveIdx = 0;
-            foreach (var move in moves) moveRanks[moveIdx++] = -(move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType : 0);
+            foreach (var move in moves)
+                moveRanks[moveIdx++] = -(move == ttMove ? 50_000 : move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType : 0);
             Array.Sort(moveRanks, moves);
 
             // TODO: Do this check before sorting in generateRankedLegalMoves()
