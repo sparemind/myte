@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.5.1 Reduce token usage in evaluation
+```
+(Regression check) Reduce token usage in evaluation and re-arrange scores to be contiguous.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 894/1024 (87.30% full) [-10 / -0.98%]
+
+Score of Myte 0.6.0 vs Myte 0.6.0-baseline: 69 - 65 - 28  [0.512] 162
+...      Myte 0.6.0 playing White: 32 - 35 - 14  [0.481] 81
+...      Myte 0.6.0 playing Black: 37 - 30 - 14  [0.543] 81
+...      White vs Black: 62 - 72 - 28  [0.469] 162
+Elo difference: 8.6 +/- 48.9, LOS: 63.5 %, DrawRatio: 17.3 %
+SPRT: llr 0.0581 (2.0%), lbound -2.94, ubound 2.94
+Elo Gain Bounds: [-40.3, 57.5]
+```
+
 ## v0.5.0 PST Tapered Evaluation
 ```
 Add tapered evaluation for piece-square tables.
