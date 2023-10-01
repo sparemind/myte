@@ -28,7 +28,7 @@ public class MyBot : IChessBot
         var killerMoves = new Move[128];
         // var counterMoves = new Move[2, 64, 64];
         var counterMoves = new Move[8192]; // 64x64x2 table
-        // var history = new int[4096]; // 64x64 butterfly table
+        // var history = new int[8192]; // 64x64x2 butterfly table
 
         void populateData()
         {
@@ -115,6 +115,12 @@ public class MyBot : IChessBot
                         {
                             phase += dynamicData[13 + pieceType]; // Phase score
                             var squareIdx = 64 * pieceType + BitboardHelper.ClearAndGetIndexOfLSB(ref pieceBB) ^ (color ? 56 : 0);
+                            if (pieceType == 3 && pieceBB != 0)
+                            {
+                                mg += 21;
+                                eg += 41;
+                            }
+
                             mg += dynamicData[squareIdx] + staticData[pieceType];
                             eg += dynamicData[squareIdx + 384] + staticData[pieceType];
                         }
@@ -165,7 +171,7 @@ public class MyBot : IChessBot
                )
             {
                 // board.Move
-                board.TrySkipTurn();
+                board.ForceSkipTurn();
                 canNMP = false;
                 ttScore = -search(ply + 1, remainingDepth - 1 - reduction, -beta, 1 - beta); // TODO remove -1 and combine with reduction; >=
                 canNMP = true;
@@ -190,6 +196,11 @@ public class MyBot : IChessBot
                 moveRanks[moveIdx++] = -(move == ttMove ? 50_000 :
                     move.IsCapture ? 1_024 * (int)move.CapturePieceType - (int)move.MovePieceType :
                     ((move == killerMoves[ply] ? 501 : 0) + (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0)));
+            // moveRanks[moveIdx++] = -(move == ttMove ? 100_000_000 :
+            //     move.IsCapture ? 1048576 * (int)move.CapturePieceType - (int)move.MovePieceType :
+            //     ((move == killerMoves[ply] ? 500_001 : 0) + (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0) +
+            //      history[cmOffset + (move.RawValue & 4095)]));
+
             // ((move == killerMoves[ply] ? 501 : 0) +
             // (move == counterMoves[cmOffset + (move.RawValue & 4095)] ? 10 : 0)));
             // (move == counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] ? 10 : 0)));
@@ -213,6 +224,10 @@ public class MyBot : IChessBot
                 // var move = moves[i];
 
                 board.MakeMove(move);
+                // TODO LMR table
+                // var lmrReduction = Math.Max(2, remainingDepth / 4) + (moveIdx + 1) / 12;
+                // if (inCheck || move.IsCapture) lmrReduction = 0;
+
                 // Principal Variation Search
                 // Reuse ttScore to save tokens 
                 if (moveIdx++ == 0 // Use full window for first move (TT move)
@@ -242,6 +257,7 @@ public class MyBot : IChessBot
                                 killerMoves[ply] = move;
                             // (killerMoves[ply, 1], killerMoves[ply, 0]) = (killerMoves[ply, 0], move);
                             // counterMoves[board.IsWhiteToMove ? 0 : 1, move.StartSquare.Index, move.TargetSquare.Index] = move;
+                            // history[cmOffset + (move.RawValue & 4095)] += remainingDepth << 1;
                             counterMoves[cmOffset + (move.RawValue & 4095)] = move;
                             ttNodeType++; // (2) Lower Bound
                             break;

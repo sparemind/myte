@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.15.0 Bishop Pair Bonus
+```
+Include evaluation bonus for having a bishop pair.
+
+Time Control:  inf/10+0.0
+Brain Capacity: 1015/1024 (99.12% full) [+16 / +1.56%]
+
+Score of Myte 0.15.0 vs Myte 0.15.0-baseline: 383 - 297 - 286  [0.545] 966
+...      Myte 0.15.0 playing White: 187 - 149 - 148  [0.539] 484
+...      Myte 0.15.0 playing Black: 196 - 148 - 138  [0.550] 482
+...      White vs Black: 335 - 345 - 286  [0.495] 966
+Elo difference: 31.0 +/- 18.4, LOS: 100.0 %, DrawRatio: 29.6 %
+SPRT: llr 2.96 (100.5%), lbound -2.94, ubound 2.94 - H1 was accepted
+
+
+```
+
 ## v0.14.0 Countermove Heuristic + Simplify TT
 ```
 Add countermove heuristic and simplify transposition table to not adjust mate plies.
