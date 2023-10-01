@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.15.1 Simplify Transposition Table
+```
+(Regression check) Reduce token usage in transposition table by collapsing to single case
+
+Time Control:  inf/10+0.0
+Brain Capacity: 991/1024 (96.78% full) [-24 / -2.34%]
+
+Score of Myte 0.15.1 vs Myte 0.15.1-baseline: 545 - 541 - 463  [0.501] 1549
+...      Myte 0.15.1 playing White: 243 - 301 - 231  [0.463] 775
+...      Myte 0.15.1 playing Black: 302 - 240 - 232  [0.540] 774
+...      White vs Black: 483 - 603 - 463  [0.461] 1549
+Elo difference: 0.9 +/- 14.5, LOS: 54.8 %, DrawRatio: 29.9 %
+SPRT: llr -0.751 (-25.5%), lbound -2.94, ubound 2.94
+
+```
+
 ## v0.15.0 Bishop Pair Bonus
 ```
 Include evaluation bonus for having a bishop pair.

@@ -105,21 +105,40 @@ public class MyBot : IChessBot
 
             int evaluate()
             {
+                /*
+                 * var pf = pawn.file
+                 * var pr = pawn.rank
+                 * pbb[pf] = max(pbb[pf], pr)
+                 *
+                 * 8-RANK
+                 *
+                 * var kf = board.KingSquare.File
+                 * for i=kf..kf+3
+                 *     mg += data[pbb[i]]
+                 *     eg += data[pbb[i]+384]
+                 */
+
+
                 phase = mg = eg = 0;
-                foreach (var color in new[] { true, false })
+                foreach (var color in new[] { 56, 0 })
                 {
                     for (var pieceType = 1; pieceType < 7; pieceType++)
                     {
-                        var pieceBB = board.GetPieceBitboard((PieceType)pieceType, color);
+                        var pieceBB = board.GetPieceBitboard((PieceType)pieceType, color == 56);
                         while (pieceBB != 0)
                         {
                             phase += dynamicData[13 + pieceType]; // Phase score
-                            var squareIdx = 64 * pieceType + BitboardHelper.ClearAndGetIndexOfLSB(ref pieceBB) ^ (color ? 56 : 0);
+                            var squareIdx = 64 * pieceType + BitboardHelper.ClearAndGetIndexOfLSB(ref pieceBB) ^ color;
                             if (pieceType == 3 && pieceBB != 0)
                             {
                                 mg += 21;
                                 eg += 41;
                             }
+                            // file = squareIdx & 7
+                            // rank = squareIdx >> 3
+                            // if (pieceType == 1) {
+                            //    pbb[color,file] = max(pbb[color,file], rank ^ ISWHITE_0_OR_7)
+                            // }
 
                             mg += dynamicData[squareIdx] + staticData[pieceType];
                             eg += dynamicData[squareIdx + 384] + staticData[pieceType];
@@ -130,7 +149,7 @@ public class MyBot : IChessBot
                     eg = -eg;
                 }
 
-                return (mg * phase + eg * (24 - phase)) / 24 * (board.IsWhiteToMove ? 1 : -1);
+                return (mg * phase + eg * (24 - phase)) / (board.IsWhiteToMove ? 24 : -24);
             }
 
 
@@ -140,17 +159,17 @@ public class MyBot : IChessBot
             var positionHash = board.ZobristKey;
             var (ttHash, ttMove, ttDepth, ttScore, ttNodeType) = tt[positionHash & 16777215];
             if (!qs // No point in TT probe in quiescence search, too expensive (TODO check); TODO remove ^^^ and get tt_bestmove here
-                && beta - alpha == 1 // Isn't null window
                 && positionHash == ttHash // TT hit
+                && beta - alpha == 1 // Isn't null window
                 && ply > 1
-                && ttDepth >= remainingDepth) // Not from a shallower search
-            {
-                // var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
-                var mateAdjusted = ttScore;
-                if (ttNodeType == 1) return mateAdjusted;
-                if (ttNodeType == 0 && mateAdjusted <= alpha) return alpha;
-                if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
-            }
+                && ttDepth >= remainingDepth // Not from a shallower search
+                && (ttScore >= beta ? ttNodeType > 0 : ttNodeType < 2)) // Valid node
+                return ttScore;
+            // var mateAdjusted = adjustPliesToMate(ttScore, ply, true);
+            // var mateAdjusted = ttScore;
+            // if (ttNodeType == 1) return mateAdjusted;
+            // if (ttNodeType == 0 && mateAdjusted <= alpha) return alpha;
+            // if (ttNodeType == 2 && mateAdjusted >= beta) return beta;
 
             // TODO add checkmate check for beta?
             if (!qs &&
@@ -185,6 +204,7 @@ public class MyBot : IChessBot
             // if (board.IsDraw()) return 0;
 
             // TODO make non alloc?
+            // board.GetLegalMovesNonAlloc();
             var moves = board.GetLegalMoves(qs);
             var moveRanks = new int[moves.Length];
             int moveIdx = 0, cmOffset = board.IsWhiteToMove ? 0 : 4096; //, rankBonus = 0;
