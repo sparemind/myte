@@ -50,7 +50,7 @@ static class Program
                     break;
                 case "uci":
                     var tag = IsBaselineBot() ? "-baseline" : "";
-                    Console.WriteLine($"id name Myte 0.16.0{tag}");
+                    Console.WriteLine($"id name Myte 1.0.0{tag}");
                     Console.WriteLine("sparemind");
                     Console.WriteLine("uciok");
                     break;

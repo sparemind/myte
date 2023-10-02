@@ -237,7 +237,7 @@ tables = [
 #         -1, 0, 1, 3, 0, 0, 0, 0, 
 #         -33, 0, -11, -34, 0, 0, 0, 0, 
 #         11, 0, 20, -10, 0, 0, 0, 0, 
-        
+
         15, 0, 20, 2, 0, 0, 0, 0,
         -25, 0, -14, -20, 0, 0, 0, 0, 
         -14, 0, -13, -15, 0, 0, 0, 0, 
@@ -349,7 +349,6 @@ def main():
     names = ['baselines + constants']
     names += [f'{phase} {piece}' for phase in phases for piece in pieces]
     names += ['pawn shield mg']
-#     names += ['mirror indices']
     for i, bitmap in enumerate(final_bitmaps):
         print(f'0x{bitmap:016x}, ', end='')
         if i % 6 == 5:

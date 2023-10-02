@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.0.0
+```
+Use transposition table in quiescence search.
+
+Time Control:   inf/10+0.0
+Brain Capacity: 1019/1024 (99.51% full) [-3 / -0.29%]
+
+Score of Myte 1.0.0 vs Myte 1.0.0-baseline: 359 - 275 - 292  [0.545] 926
+...      Myte 1.0.0 playing White: 176 - 146 - 141  [0.532] 463
+...      Myte 1.0.0 playing Black: 183 - 129 - 151  [0.558] 463
+...      White vs Black: 305 - 329 - 292  [0.487] 926
+Elo difference: 31.6 +/- 18.5, LOS: 100.0 %, DrawRatio: 31.5 %
+SPRT: llr 2.98 (101.4%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [13.1, 50.1]
+```
+
 ## v0.16.0 Endgame Material Values + Texel Tuning
 ```
 Add endgame material values to taper and tune all values.
