@@ -8,8 +8,8 @@ Texel tuning on 139,891 positions
     MSE Before: 0.377726231
     MSE After:  0.376393310 (-0.0013329206178178121)
 
-Time Control:  inf/10+0.0
-Brain Capacity: 1024/1024 (100.00% full) [+0 / +0.00%]
+Time Control:   inf/10+0.0
+Brain Capacity: 1022/1024 (99.80% full) [+31 / +3.03%]
 
 Score of Myte 0.16.0 vs Myte 0.16.0-baseline: 448 - 355 - 250  [0.544] 1053
 ...      Myte 0.16.0 playing White: 237 - 164 - 126  [0.569] 527
@@ -24,7 +24,7 @@ Elo Gain Bounds: [12.4, 49.2]
 ```
 (Regression check) Reduce token usage in transposition table by collapsing to single case
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 991/1024 (96.78% full) [-24 / -2.34%]
 
 Score of Myte 0.15.1 vs Myte 0.15.1-baseline: 545 - 541 - 463  [0.501] 1549
@@ -40,7 +40,7 @@ Elo Gain Bounds: [-13.6, 15.4]
 ```
 Include evaluation bonus for having a bishop pair.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 1015/1024 (99.12% full) [+16 / +1.56%]
 
 Score of Myte 0.15.0 vs Myte 0.15.0-baseline: 383 - 297 - 286  [0.545] 966
@@ -56,7 +56,7 @@ Elo Gain Bounds: [12.6, 49.4]
 ```
 Add countermove heuristic and simplify transposition table to not adjust mate plies.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 999/1024 (97.56% full) [+3 / +0.29%]
 
 Score of Myte 0.14.0 vs Myte 0.14.0-baseline: 419 - 333 - 356  [0.539] 1108
@@ -73,7 +73,7 @@ Elo Gain Bounds: [10.1, 43.9]
 ```
 Use principal variation search for non-shallow, non-quiescent searches
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 996/1024 (97.27% full) [+31 / +3.03%]
 
 Score of Myte 0.13.0 vs Myte 0.13.0-baseline: 202 - 125 - 145  [0.582] 472
@@ -89,7 +89,7 @@ Elo Gain Bounds: [30.9, 83.5]
 ```
 Add null move pruning (without zugzwang check).
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 965/1024 (94.24% full) [+79 / +7.71%]
 
 Score of Myte 0.12.0 vs Myte 0.12.0-baseline: 207 - 131 - 162  [0.576] 500
@@ -106,7 +106,7 @@ Elo Gain Bounds: [28.0, 78.4]
 ```
 Add basic static null move pruning.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 886/1024 (80.57% full) [+25 / +2.44%]
 
 Score of Myte 0.11.0 vs Myte 0.11.0-baseline: 140 - 66 - 87  [0.626] 293
@@ -123,7 +123,7 @@ Elo Gain Bounds: [55.6, 123.8]
 ```
 Extends the search when in check to avoid entering quiescence search while in check.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 861/1024 (84.08% full) [+5 / +0.49%]
 
 Score of Myte 0.10.0 vs Myte 0.10.0-baseline: 154 - 74 - 75  [0.632] 303
@@ -139,7 +139,7 @@ Elo Gain Bounds: [59.2, 128.8]
 ```
 Add a 1 bucket killer moves table and use in move ordering for non-captures.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 856/1024 (83.60% full) [+26 / +2.53%]
 
 Score of Myte 0.9.0 vs Myte 0.9.0-baseline: 400 - 309 - 228  [0.549] 937
@@ -156,7 +156,7 @@ Elo Gain Bounds: [14.4, 53.2]
 ```
 Order transposition table moves first.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 830/1024 (81.05% full) [+6 / +0.59%]
 
 Score of Myte 0.8.0 vs Myte 0.8.0-baseline: 113 - 33 - 35  [0.721] 181
@@ -173,7 +173,7 @@ Elo Gain Bounds: [115.3, 214.5]
 ```
 Inline move ranking and ordering and replace LINQ usage with Array.sort().
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 824/1024 (80.47% full) [-16 / -1.56%]
 
 Score of Myte 0.7.0 vs Myte 0.7.0-baseline: 227 - 140 - 96  [0.594] 463
@@ -189,7 +189,7 @@ Elo Gain Bounds: [37.5, 94.7]
 ```
 Change evaluation function to use bitboards and combine the white/black score accumulators.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 840/1024 (82.03% full) [-54 / -5.23%]
 
 Score of Myte 0.6.0 vs Myte 0.6.0-baseline: 103 - 27 - 37  [0.728] 167
@@ -205,7 +205,7 @@ Elo Gain Bounds: [119.9, 221.3]
 ```
 (Regression check) Reduce token usage in evaluation and re-arrange scores to be contiguous.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 894/1024 (87.30% full) [-10 / -0.98%]
 
 Score of Myte 0.6.0 vs Myte 0.6.0-baseline: 69 - 65 - 28  [0.512] 162
@@ -221,7 +221,7 @@ Elo Gain Bounds: [-40.3, 57.5]
 ```
 Add tapered evaluation for piece-square tables.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 904/1024 (88.28% full) [+64 / +6.25%]
 
 Score of Myte 0.5.0 vs Myte 0.5.0-baseline: 228 - 133 - 54  [0.614] 415
@@ -238,7 +238,7 @@ Elo Gain Bounds: [49.0, 113.0]
 ```
 Include midgame piece-square tables in evaluation.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 840/1024 (82.03% full) [+70 / +6.84%]
 
 Score of Myte 0.4.0 vs Myte 0.4.0-baseline: 92 - 11 - 13  [0.849] 116
@@ -257,7 +257,7 @@ Elo Gain Bounds: [218.7, 381.7]
 Add transposition table with insertion and probing.
 Merge quiescence search with standard search and control with conditions.
 
-Time Control:  inf/10+0.0
+Time Control:   inf/10+0.0
 Brain Capacity: 770/1024 (75.20% full) [+296 / +28.91%]
 
 Score of Myte 0.3.0 vs Myte 0.3.0-baseline: 112 - 74 - 486  [0.528] 672
