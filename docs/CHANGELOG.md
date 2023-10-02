@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.16.0 Endgame Material Values + Texel Tuning
+```
+Add endgame material values to taper and tune all values.
+
+Texel tuning on 139,891 positions
+    MSE Before: 0.377726231
+    MSE After:  0.376393310 (-0.0013329206178178121)
+
+Time Control:  inf/10+0.0
+Brain Capacity: 1024/1024 (100.00% full) [+0 / +0.00%]
+
+Score of Myte 0.16.0 vs Myte 0.16.0-baseline: 448 - 355 - 250  [0.544] 1053
+...      Myte 0.16.0 playing White: 237 - 164 - 126  [0.569] 527
+...      Myte 0.16.0 playing Black: 211 - 191 - 124  [0.519] 526
+...      White vs Black: 428 - 375 - 250  [0.525] 1053
+Elo difference: 30.8 +/- 18.4, LOS: 99.9 %, DrawRatio: 23.7 %
+SPRT: llr 2.95 (100.1%), lbound -2.94, ubound 2.94 - H1 was accepted
+Elo Gain Bounds: [12.4, 49.2]
+```
+
 ## v0.15.1 Simplify Transposition Table
 ```
 (Regression check) Reduce token usage in transposition table by collapsing to single case
@@ -13,7 +33,7 @@ Score of Myte 0.15.1 vs Myte 0.15.1-baseline: 545 - 541 - 463  [0.501] 1549
 ...      White vs Black: 483 - 603 - 463  [0.461] 1549
 Elo difference: 0.9 +/- 14.5, LOS: 54.8 %, DrawRatio: 29.9 %
 SPRT: llr -0.751 (-25.5%), lbound -2.94, ubound 2.94
-
+Elo Gain Bounds: [-13.6, 15.4]
 ```
 
 ## v0.15.0 Bishop Pair Bonus
@@ -29,8 +49,7 @@ Score of Myte 0.15.0 vs Myte 0.15.0-baseline: 383 - 297 - 286  [0.545] 966
 ...      White vs Black: 335 - 345 - 286  [0.495] 966
 Elo difference: 31.0 +/- 18.4, LOS: 100.0 %, DrawRatio: 29.6 %
 SPRT: llr 2.96 (100.5%), lbound -2.94, ubound 2.94 - H1 was accepted
-
-
+Elo Gain Bounds: [12.6, 49.4]
 ```
 
 ## v0.14.0 Countermove Heuristic + Simplify TT

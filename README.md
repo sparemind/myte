@@ -2,8 +2,34 @@
 
 Myte is a tiny C# chess bot created for the [Chess Coding Challenge](https://github.com/SebLague/Chess-Challenge) by [Sebastian Lague](https://www.youtube.com/@SebastianLague).
 
+- [CHANGELOG.md](CHANGELOG.md) contains a history of feature changes and test results
+
 ## Features
 
+- Engine
+  - Time Control Management
+- Search
+  - Negamax Alpha-Beta search
+  - Principal Variation Search
+  - Quiescence Search
+  - Iterative Deepening
+  - Transposition Table
+  - Check Extensions
+  - Move Ordering
+    - Transposition Table Moves
+    - MVV-LVA
+    - Killer Moves Heuristic
+    - Countermove Heuristic
+  - Null Move Pruning
+  - Static Null Move Pruning
+- Evaluation
+  - Tapered Evaluation
+  - Material Evaluation
+  - Piece-Square Tables
+  - Bishop Pairs
+- Tuning
+  - Texel Tuning with gradient descent
+ 
 ## Makefile Targets
 ```
 build           Build all executables
