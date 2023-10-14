@@ -2,7 +2,7 @@
 
 Myte is a tiny C# chess bot created for the [Chess Coding Challenge](https://github.com/SebLague/Chess-Challenge) by [Sebastian Lague](https://www.youtube.com/@SebastianLague).
 
-- [CHANGELOG.md](CHANGELOG.md) contains a history of feature changes and test results
+- [CHANGELOG.md](docs/CHANGELOG.md) contains a history of feature changes and test results
 
 ## Features
 
